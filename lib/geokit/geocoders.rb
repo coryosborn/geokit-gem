@@ -147,8 +147,7 @@ module Geokit
       
       # Call the geocoder service using the timeout if configured.
       def self.call_geocoder_service(url)
-        puts url
-        Timeout::timeout(Geokit::Geocoders::request_timeout) { return self.do_get(url) } if Geokit::Geocoders::request_timeout        
+        Timeout::timeout(Geokit::Geocoders::request_timeout) { return self.do_get(url) } if Geokit::Geocoders::request_timeout
         return self.do_get(url)
       rescue TimeoutError
         return nil  
