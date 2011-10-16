@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require File.join(File.dirname(__FILE__), 'test_base_geocoder')
 
 Geokit::Geocoders::google = 'Google'
@@ -533,4 +535,9 @@ class GoogleGeocoder3Test < BaseGeocoderTest #:nodoc: all
        res=Geokit::Geocoders::GoogleGeocoder3.geocode(@address)
      end
    end
+
+  def test_unicode_encoding
+    geoloc = Geokit::Geocoders::GoogleGeocoder3.geocode("Timisoara, Timiş")
+    assert geoloc.success
+  end
 end

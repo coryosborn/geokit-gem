@@ -44,9 +44,12 @@ module Geokit
     end
     
     def url_escape(s)
-    s.gsub(/([^ a-zA-Z0-9_.-]+)/nu) do
-      '%' + $1.unpack('H2' * $1.size).join('%').upcase
-      end.tr(' ', '+')
+      if URI.const_defined?(:Parser)
+        parser = URI::Parser.new
+ 	      parser.escape(s)
+      else
+        URI.escape(s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+      end
     end
     
     def camelize(str)
@@ -144,6 +147,7 @@ module Geokit
       
       # Call the geocoder service using the timeout if configured.
       def self.call_geocoder_service(url)
+        puts url
         Timeout::timeout(Geokit::Geocoders::request_timeout) { return self.do_get(url) } if Geokit::Geocoders::request_timeout        
         return self.do_get(url)
       rescue TimeoutError
