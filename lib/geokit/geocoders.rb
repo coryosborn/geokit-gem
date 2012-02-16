@@ -633,8 +633,8 @@ module Geokit
         # with google's last result as your first which isn't nominal
         # results['results'].sort_by{|a|accuracy[a['geometry']['location_type']]}.reverse.each do |addr|
         grouped_results = results['results'].group_by {|a| accuracy[a['geometry']['location_type']]}
-        grouped_results.keys.sort{|a,b| b <=> a}.each do |accuracy|
-          grouped_results[accuracy].each do |addr|
+        grouped_results.keys.sort{|a,b| b <=> a}.each do |key|
+          grouped_results[key].each do |addr|
             res=GeoLoc.new
             res.provider = 'google3'
             res.success = true
