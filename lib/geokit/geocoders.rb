@@ -92,6 +92,7 @@ module Geokit
     @@logger=Logger.new(STDOUT)
     @@logger.level=Logger::INFO
     @@domain = nil
+    @@datascience = 'www.datasciencetoolkit.org'
     
     def self.__define_accessors
       class_variables.each do |v| 
@@ -532,16 +533,24 @@ module Geokit
 
     class GoogleGeocoder3 < Geocoder
 
+      def self.ws_domain
+        "maps.google.com"
+      end
+
+      def self.provider
+        'google3'
+      end
+
       private 
       # Template method which does the reverse-geocode lookup.
       def self.do_reverse_geocode(latlng) 
         latlng=LatLng.normalize(latlng)
-        res = self.call_geocoder_service("http://maps.google.com/maps/api/geocode/json?sensor=false&latlng=#{Geokit::Inflector::url_escape(latlng.ll)}")
+        res = self.call_geocoder_service("http://#{self.ws_domain}/maps/api/geocode/json?sensor=false&latlng=#{Geokit::Inflector::url_escape(latlng.ll)}")
         return GeoLoc.new unless (res.is_a?(Net::HTTPSuccess) || res.is_a?(Net::HTTPOK))
         json = res.body
         logger.debug "Google reverse-geocoding. LL: #{latlng}. Result: #{json}"
         return self.json2GeoLoc(json)        
-      end  
+      end
 
       # Template method which does the geocode lookup.
       #
@@ -571,7 +580,7 @@ module Geokit
       def self.do_geocode(address, options = {})
         bias_str = options[:bias] ? construct_bias_string_from_options(options[:bias]) : ''
         address_str = address.is_a?(GeoLoc) ? address.to_geocodeable_s : address
-        res = self.call_geocoder_service("http://maps.google.com/maps/api/geocode/json?sensor=false&address=#{Geokit::Inflector::url_escape(address_str)}#{bias_str}")
+        res = self.call_geocoder_service("http://#{self.ws_domain}/maps/api/geocode/json?sensor=false&address=#{Geokit::Inflector::url_escape(address_str)}#{bias_str}")
         return GeoLoc.new if !res.is_a?(Net::HTTPSuccess)
         json = res.body
         logger.debug "Google geocoding. Address: #{address}. Result: #{json}"
@@ -641,7 +650,7 @@ module Geokit
         end
         iter.each do |addr|
           res=GeoLoc.new
-          res.provider = 'google3'
+          res.provider = self.provider
           res.success = true
           res.full_address = addr['formatted_address']
           addr['address_components'].each do |comp|
@@ -697,6 +706,18 @@ module Geokit
         return ret
       end
     end
+
+    class DataScienceGeocoder < GoogleGeocoder3
+      def self.ws_domain
+        Geokit::Geocoders::datascience || 'www.datasciencetoolkit.org'
+      end
+
+      def self.provider
+        "datascience (#{self.ws_domain})"
+      end
+    end
+
+
     
     class FCCGeocoder < Geocoder
 
