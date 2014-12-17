@@ -541,11 +541,15 @@ module Geokit
         'google3'
       end
 
+      def self.key
+        Geokit::Geocoders::google
+      end
+
       private 
       # Template method which does the reverse-geocode lookup.
       def self.do_reverse_geocode(latlng) 
         latlng=LatLng.normalize(latlng)
-        res = self.call_geocoder_service("http://#{self.ws_domain}/maps/api/geocode/json?sensor=false&latlng=#{Geokit::Inflector::url_escape(latlng.ll)}")
+        res = self.call_geocoder_service("http://#{self.ws_domain}/maps/api/geocode/json?sensor=false&key=#{self.key}&latlng=#{Geokit::Inflector::url_escape(latlng.ll)}")
         return GeoLoc.new unless (res.is_a?(Net::HTTPSuccess) || res.is_a?(Net::HTTPOK))
         json = res.body
         logger.debug "Google reverse-geocoding. LL: #{latlng}. Result: #{json}"
@@ -580,7 +584,7 @@ module Geokit
       def self.do_geocode(address, options = {})
         bias_str = options[:bias] ? construct_bias_string_from_options(options[:bias]) : ''
         address_str = address.is_a?(GeoLoc) ? address.to_geocodeable_s : address
-        res = self.call_geocoder_service("http://#{self.ws_domain}/maps/api/geocode/json?sensor=false&address=#{Geokit::Inflector::url_escape(address_str)}#{bias_str}")
+        res = self.call_geocoder_service("http://#{self.ws_domain}/maps/api/geocode/json?sensor=false&key=#{self.key}&address=#{Geokit::Inflector::url_escape(address_str)}#{bias_str}")
         return GeoLoc.new if !res.is_a?(Net::HTTPSuccess)
         json = res.body
         logger.debug "Google geocoding. Address: #{address}. Result: #{json}"
@@ -714,6 +718,10 @@ module Geokit
 
       def self.provider
         "datascience (#{self.ws_domain})"
+      end
+
+      def self.key
+        nil
       end
     end
 
