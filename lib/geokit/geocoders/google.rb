@@ -2,7 +2,9 @@ module Geokit
   module Geocoders
     class GoogleGeocoder < Geocoder
       config :client_id, :cryptographic_key, :channel, :api_key
+      config :accuracy_sort
       self.secure = true
+      self.accuracy_sort = true
 
       private
 
@@ -120,10 +122,14 @@ module Geokit
           single_json_to_geoloc(addr)
         end
 
-        all = []
-        # here we group the the results by their accuracy, assuming the first returned in the same accuracy is google's best guess
-        grouped_results = unsorted.group_by {|a| a.accuracy }
-        grouped_results.keys.sort{|a,b| b <=> a}.each {|key| all.concat(grouped_results[key])}
+        if self.accuracy_sort
+          all = []
+          # here we group the the results by their accuracy, assuming the first returned in the same accuracy is google's best guess
+          grouped_results = unsorted.group_by {|a| a.accuracy }
+          grouped_results.keys.sort{|a,b| b <=> a}.each {|key| all.concat(grouped_results[key])}
+        else
+          all = unsorted
+        end
 
         encoded = all.first
         encoded.all = all
