@@ -1,38 +1,39 @@
-# -*- encoding: utf-8 -*-
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'geokit/version'
 
-Gem::Specification.new do |s|
-  s.name = %q{geokit}
-  s.version = "1.6.0"
+Gem::Specification.new do |spec|
+  spec.name          = 'geokit'
+  spec.version       = Geokit::VERSION
+  spec.authors       = ['Michael Noack', 'James Cox', 'Andre Lewis', 'Bill Eisenhauer']
+  spec.email         = ['michael+geokit@noack.com.au']
+  spec.description   = 'Geokit provides geocoding and distance calculation in an easy-to-use API'
+  spec.summary       = 'Geokit: encoding and distance calculation gem'
+  spec.homepage      = 'http://github.com/geokit/geokit'
+  spec.license       = 'MIT'
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Andre Lewis and Bill Eisenhauer"]
-  s.date = %q{2009-08-02}
-  s.description = %q{Geokit Gem}
-  s.email = ["andre@earthcode.com / bill_eisenhauer@yahoo.com"]
-  s.extra_rdoc_files = ["Manifest.txt", "README.markdown"]
-  s.files = ["Manifest.txt", "README.markdown", "Rakefile", "lib/geokit/geocoders.rb", "lib/geokit.rb",
-    "lib/geokit/mappable.rb", "test/test_base_geocoder.rb", "test/test_bounds.rb",
-    "test/test_ca_geocoder.rb", "test/test_geoloc.rb", "test/test_google_geocoder3.rb",
-    "test/test_google_geocoder.rb", "test/test_latlng.rb", "test/test_multi_geocoder.rb",
-    "test/test_us_geocoder.rb", "test/test_yahoo_geocoder.rb"
-  ]
-  s.has_rdoc = true
-  s.homepage = %q{http://geokit.rubyforge.org}
-  s.rdoc_options = ["--main", "README.markdown"]
-  s.require_paths = ["lib"]
-  s.rubyforge_project = %q{geokit}
-  s.rubygems_version = %q{1.3.5}
-  s.summary = %q{none}
-  s.test_files = [ 
-    "test/test_base_geocoder.rb", "test/test_bounds.rb", "test/test_ca_geocoder.rb",
-    "test/test_geoloc.rb", "test/test_geoplugin_geocoder.rb", "test/test_google_geocoder3.rb",
-    "test/test_google_geocoder.rb", "test/test_google_reverse_geocoder.rb", "test/test_inflector.rb",
-    "test/test_ipgeocoder.rb", "test/test_latlng.rb", "test/test_multi_geocoder.rb",
-    "test/test_multi_ip_geocoder.rb", "test/test_us_geocoder.rb", "test/test_yahoo_geocoder.rb"
-  ]
-  if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
-    s.specification_version = 2
-  end
-  s.add_dependency(%q{json_pure})
+  spec.has_rdoc = true
+  spec.rdoc_options = ['--main', 'README.markdown']
+  spec.extra_rdoc_files = ['README.markdown']
+
+  spec.files         = `git ls-files`.split($/)
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.require_paths = ['lib']
+
+  spec.required_ruby_version = '>= 1.9.3'
+  spec.add_development_dependency 'bundler', '~> 1.0'
+  spec.add_development_dependency 'coveralls'
+  spec.add_development_dependency 'mocha'
+  spec.add_development_dependency 'pre-commit'
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'simplecov-rcov'
+  spec.add_development_dependency 'test-unit'
+  spec.add_development_dependency 'typhoeus' # used in net_adapter
+  spec.add_development_dependency 'vcr'
+  # webmock 2 not yet compatible out of the box with VCR
+  spec.add_development_dependency 'webmock', '< 2' # used in vcr
 end

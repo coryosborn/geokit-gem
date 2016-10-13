@@ -1,7 +1,6 @@
 module Geokit
-  VERSION = '1.6.0'
   # These defaults are used in Geokit::Mappable.distance_to and in acts_as_mappable
-  @@default_units = :miles
+  @@default_units   = :miles
   @@default_formula = :sphere
 
   [:default_units, :default_formula].each do |sym|
@@ -23,8 +22,10 @@ end
 
 path = File.expand_path(File.dirname(__FILE__))
 $:.unshift path unless $:.include?(path)
+require 'geokit/core_ext'
 require 'geokit/geocoders'
 require 'geokit/mappable'
-
-# make old-style module name "GeoKit" equivalent to new-style "Geokit"
-GeoKit=Geokit
+require 'geokit/bounds'
+require 'geokit/lat_lng'
+require 'geokit/geo_loc'
+require 'geokit/polygon'

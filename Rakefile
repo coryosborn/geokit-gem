@@ -1,23 +1,26 @@
-# -*- ruby -*-
+require 'bundler/gem_tasks'
+require 'rake/testtask'
 
-require 'rubygems'
-require 'hoe'
-require './lib/geokit.rb'
-
-
-# undefined method `empty?' for nil:NilClass
-# /Library/Ruby/Site/1.8/rubygems/specification.rb:886:in `validate' 
-#class NilClass
-#  def empty?
-#    true
-#  end
-#end 
-
-Hoe.spec('geokit') do |p|
-  p.version=Geokit::VERSION
-  p.developer('Andre Lewis', 'andre@earthcode.com')
-  p.summary="Geokit provides geocoding and distance calculation in an easy-to-use API"
+task :default do
 end
 
+Rake::TestTask.new do |t|
+  t.libs << 'test'
+  t.test_files = FileList['test/test*.rb']
+  t.verbose = true
+end
 
-# vim: syntax=Ruby
+desc 'Downloads GeoLiteCity.dat from maxmind.com'
+task :download_geolitecity do
+  total_size = nil
+  url = 'http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz'
+  progress_cb = lambda { |size| print("Downloaded #{size} of #{total_size} bytes\r") if total_size }
+  length_cb = lambda { |content_length| total_size = content_length }
+  require 'open-uri'
+  File.open('/tmp/GeoLiteCity.dat.gz', 'wb') do |f|
+    open(url, 'rb', progress_proc: progress_cb, content_length_proc: length_cb) do |downloaded_file|
+      f.write(downloaded_file.read)
+    end
+  end
+  puts "\nDone."
+end
