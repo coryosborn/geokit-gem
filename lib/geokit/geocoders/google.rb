@@ -120,7 +120,11 @@ module Geokit
           single_json_to_geoloc(addr)
         end
 
-        all = unsorted.sort { |a, b| b.accuracy <=> a.accuracy }
+        all = []
+        # here we group the the results by their accuracy, assuming the first returned in the same accuracy is google's best guess
+        grouped_results = unsorted['results'].group_by {|a| a.accuracy }
+        grouped_results.keys.sort{|a,b| b <=> a}.each {|key| all.concat(group_results[key])}
+
         encoded = all.first
         encoded.all = all
         encoded
