@@ -149,6 +149,27 @@ module Geokit
         GeoLoc.new
       end
 
+      def self.use_https?
+        secure && Geokit::Geocoders.secure
+      end
+
+      def self.protocol
+        use_https? ? 'https' : 'http'
+      end
+
+      # Wraps the geocoder call around a proxy if necessary.
+      def self.do_get(url)
+        net_adapter.do_get(url)
+      end
+
+      def self.net_adapter
+        Geokit::Geocoders.net_adapter
+      end
+
+      def self.provider_name
+        name.split('::').last.gsub(/Geocoder$/, '')
+      end
+
       def self.parse(format, body, *args)
         logger.debug "#{provider_name} geocoding. Result: #{CGI.escape(body)}"
         case format
